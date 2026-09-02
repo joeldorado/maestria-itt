@@ -6,14 +6,14 @@ Modelado de una jerarquía de animales usando clases abstractas, herencia y poli
 
 - `Animal` es una clase abstracta (`ABC`) con los atributos comunes: nombre, fecha de nacimiento, tipo, género, tipo de dieta y alimento.
   Declara el método abstracto `sound()` y un método concreto `eat()`.
-- `bird`, `feline` y `marine` heredan de `Animal`, agregan atributos propios y sobrescriben `sound()` y `eat()` (polimorfismo).
+- `Bird`, `Feline` y `Marine` heredan de `Animal`, agregan atributos propios y sobrescriben `sound()` y `eat()` (polimorfismo).
 - Cada subclase agrega un comportamiento específico: `fly()`, `hunt()` y `swim()`.
 
 ```
 Animal (abstracta)
-├── bird    -> fly()
-├── feline  -> hunt()
-└── marine  -> swim()
+├── Bird    -> fly()
+├── Feline  -> hunt()
+└── Marine  -> swim()
 ```
 
 ## Ejecución
