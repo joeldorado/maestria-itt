@@ -80,6 +80,9 @@ class Marine(Animal):
             return f"{self.name} can swim at a speed of {self.swim_speed} km/h and reach a maximum depth of {self.max_depth} meters."
         else:
             return f"{self.name} cannot swim."
+        
+        
+        
 #instancia de la clase Feline que representa a un león. Se le pasan los valores de los atributos al constructor de la clase Feline.
 leon = Feline("Leo", "2018-05-10", "Leon", "Male", "Carnivore", "Meat", 18, 60, True)
 #aqui usamos el metodo sound que debe ser implementado por todas las subclases de Animal.
