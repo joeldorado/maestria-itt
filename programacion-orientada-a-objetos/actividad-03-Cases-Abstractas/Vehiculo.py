@@ -75,7 +75,7 @@ vehiculos = [toyota, honda, volvo];
 
 for vehiculo in vehiculos:
     print("--------------------------------")
-    print(f"MArca: {vehiculo.marca}")
+    print(f"Marca: {vehiculo.marca}")
     print(f"Modelo: {vehiculo.modelo}")
     print(f"Año: {vehiculo.anio}")
     print(f"Combustible: {vehiculo.getCombustible} litros")

@@ -18,6 +18,7 @@ class Libro(Producto):
         
     def imprimirDatos(self):
         return f"El libro {self.nombreproducto} tiene un precio de venta de ${self.precioventa} MXN y un costo de fabrica de ${self.costofabirca} MXN."
+
 class Dvd(Producto):
     def __init__(self, precioventa, costofabrica, nombreproducto):
         super().__init__(precioventa, costofabrica, nombreproducto)
