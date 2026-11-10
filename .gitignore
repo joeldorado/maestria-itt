@@ -16,3 +16,9 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
+
+# GA Lab (Concurrencia-hilos/web-django)
+.pm/
+db.sqlite3*
+Concurrencia-hilos/web-django/media/
+*.zip

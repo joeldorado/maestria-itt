@@ -1,0 +1,3503 @@
+{% load static %}<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GA Lab | Laboratorio de optimización</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@materializecss/materialize@2.2.2/dist/css/materialize.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["\\(", "\\)"],
+            ["$", "$"],
+          ],
+        },
+        chtml: { scale: 1.02 },
+      };
+    </script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"
+    ></script>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --ink: #172033;
+        --muted: #64748b;
+        --line: #dbe3ef;
+        --canvas: #f4f7fb;
+        --green: #15803d;
+        --danger: #dc2626;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        line-height: 1.5;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+
+      .container {
+        width: min(1440px, calc(100% - 40px));
+        max-width: none;
+        margin: auto;
+        padding: 28px 0 48px;
+      }
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        border-radius: 18px;
+        color: white;
+        background:
+          radial-gradient(circle at 90% 0%, #3b82f655, transparent 35%),
+          linear-gradient(125deg, #111c3a, #172554 60%, #1d4ed8);
+        box-shadow: 0 12px 30px #1e40af18;
+      }
+      .eyebrow {
+        color: #bfdbfe;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .brand {
+        margin: 5px 0;
+        color: white;
+        font-size: clamp(2rem, 4vw, 2.7rem);
+        font-weight: 850;
+        letter-spacing: -0.05em;
+        line-height: 1.2;
+      }
+      .hero p {
+        margin: 8px 0 0;
+        color: #e2e8f0;
+      }
+      .hero-note {
+        padding: 12px 16px;
+        border: 1px solid #ffffff30;
+        border-radius: 12px;
+        background: #ffffff0d;
+        color: #eff6ff;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+
+      .panel {
+        min-width: 0;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 5px 20px #0f172a08;
+      }
+      .panel-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .heading-icon {
+        display: grid;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: var(--primary);
+        font-size: 1.05rem;
+      }
+      .panel-heading h2 {
+        margin: 0 0 4px;
+        font-size: 1.15rem;
+        letter-spacing: -0.025em;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .panel-heading p {
+        margin: 0;
+        font-size: 0.88rem;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin: 20px 0 24px;
+        border-bottom: 1px solid var(--line);
+      }
+      .tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 13px 20px;
+        border: 0;
+        border-bottom: 3px solid transparent;
+        background: transparent;
+        color: var(--muted);
+        font-weight: 700;
+        transition: 0.2s;
+      }
+      .tab-btn:hover {
+        color: var(--primary);
+      }
+      .tab-btn.active {
+        border-bottom-color: var(--primary);
+        color: var(--primary);
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+
+      .section-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #344054;
+        font-size: 0.86rem;
+        font-weight: 750;
+      }
+      .function-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .function-option {
+        position: relative;
+        min-width: 0;
+      }
+      .function-option input[type="radio"] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+      }
+      .function-option label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 54px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: white;
+        color: #334155;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 650;
+        transition: 0.18s;
+      }
+      .radio-dot {
+        display: grid;
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        place-items: center;
+        border: 2px solid #94a3b8;
+        border-radius: 50%;
+      }
+      .function-option input:checked + label {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: #1d4ed8;
+        box-shadow: 0 0 0 2px #2563eb12;
+      }
+      .function-option input:checked + label .radio-dot {
+        border-color: var(--primary);
+      }
+      .function-option input:checked + label .radio-dot::after {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+        content: "";
+      }
+      .function-option input:focus-visible + label {
+        outline: 3px solid #93c5fd;
+        outline-offset: 2px;
+      }
+      .run-mini {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        min-height: 36px;
+        margin-top: 6px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 750;
+        box-shadow: 0 3px 10px #2563eb30;
+        transition: background 0.15s, transform 0.15s;
+      }
+      .run-mini:hover {
+        background: var(--primary-dark);
+      }
+      .run-mini:active {
+        transform: translateY(1px);
+      }
+      .run-mini:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .function-option input:checked ~ .run-mini {
+        display: inline-flex;
+      }
+      .function-grid {
+        align-items: start;
+      }
+
+      /* Tarjeta de información benchmark: Materialize hide/show se controla con JS. */
+      .benchmark-card {
+        margin: 0 0 27px;
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid #d8e5fb;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        box-shadow: 0 5px 18px #1e40af0b;
+      }
+      .benchmark-card.hide {
+        display: none !important;
+      }
+      .benchmark-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 19px 21px 15px;
+        border-bottom: 1px solid #e5edf9;
+      }
+      .benchmark-title-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        min-width: 0;
+      }
+      .benchmark-icon {
+        display: grid;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 12px;
+        background: #eaf2ff;
+        color: var(--primary);
+        font-size: 1.05rem;
+      }
+      .benchmark-title {
+        margin: 0 0 3px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+      }
+      .benchmark-subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.83rem;
+      }
+      .benchmark-tag {
+        flex: 0 0 auto;
+        padding: 6px 10px;
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 0.73rem;
+        font-weight: 800;
+      }
+      .benchmark-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 18px;
+        padding: 18px 21px 21px;
+      }
+      .benchmark-description {
+        margin: 0 0 15px;
+        color: #475569;
+        font-size: 0.88rem;
+      }
+      .benchmark-facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .benchmark-fact {
+        min-width: 0;
+        padding: 11px 12px;
+        border: 1px solid #e3eaf4;
+        border-radius: 10px;
+        background: #fff;
+      }
+      .benchmark-fact-label {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--muted);
+        font-size: 0.73rem;
+        font-weight: 650;
+      }
+      .benchmark-fact-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: #1e293b;
+        font-size: 0.9rem;
+        font-weight: 800;
+      }
+      .benchmark-formula-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        padding: 17px;
+        border: 1px solid #e3eaf4;
+        border-radius: 12px;
+        background: white;
+      }
+      .formula-label {
+        margin-bottom: 14px;
+        color: #475569;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .formula {
+        min-width: 0;
+        overflow-x: auto;
+        padding: 7px 0;
+        color: #172554;
+        font-size: 1.04rem;
+        text-align: center;
+      }
+      .formula mjx-container {
+        max-width: 100%;
+      }
+      .benchmark-note {
+        margin: 15px 0 0;
+        color: #64748b;
+        font-size: 0.76rem;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 19px 16px;
+      }
+      .field {
+        min-width: 0;
+      }
+      .field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #344054;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .field input {
+        display: block;
+        width: 100%;
+        height: 46px;
+        margin: 0;
+        padding: 0 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        outline: none;
+        background: #fff;
+        color: #172033;
+        -webkit-text-fill-color: #172033;
+        font-size: 0.95rem;
+        font-weight: 550;
+        box-shadow: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .field input:hover {
+        border-color: #94a3b8;
+      }
+      .field input:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px #2563eb1c;
+      }
+      .field-hint {
+        display: block;
+        margin-top: 5px;
+        color: #64748b;
+        font-size: 0.74rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 44px;
+        padding: 0 17px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 750;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: 0;
+        line-height: normal;
+        transition:
+          background 0.15s,
+          transform 0.15s,
+          border-color 0.15s;
+        box-shadow: none;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 12px #2563eb25;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        color: white;
+      }
+      .btn-secondary {
+        border-color: var(--line);
+        background: white;
+        color: #334155;
+      }
+      .btn-secondary:hover {
+        background: #f8fafc;
+        color: #1e293b;
+      }
+      .btn-danger {
+        border-color: #fecaca;
+        background: #fff;
+        color: var(--danger);
+      }
+      .btn-danger:hover {
+        border-color: #fca5a5;
+        background: #fef2f2;
+        color: #b91c1c;
+      }
+      .btn-run {
+        flex: 1;
+        min-height: 49px;
+        font-size: 0.95rem;
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .result {
+        display: none;
+        margin-top: 25px;
+        padding: 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 14px;
+        background: #f8fbff;
+      }
+      .result.visible {
+        display: block;
+      }
+      .result.error {
+        border-color: #fecaca;
+        background: #fff7f7;
+        color: #991b1b;
+      }
+      .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .result-header h3 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+      #resultado-contenido {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .metric {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: white;
+      }
+      .metric-label {
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 0.77rem;
+      }
+      .metric-value {
+        overflow-wrap: anywhere;
+        color: var(--ink);
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+      .result-reference {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid #c7d2fe;
+        border-left: 5px solid #4f46e5;
+        border-radius: 11px;
+        background: #eef2ff;
+      }
+      .result-reference .ref-label {
+        display: block;
+        margin-bottom: 3px;
+        color: #4338ca;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .result-reference .ref-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: #1e1b4b;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 1rem;
+        font-weight: 800;
+      }
+      .result-reference .ref-value.ok {
+        color: #15803d;
+      }
+      .result-reference .ref-value.far {
+        color: #b45309;
+      }
+      .result-reference .ref-note {
+        grid-column: 1 / -1;
+        margin: 0;
+        color: #3730a3;
+        font-size: 0.78rem;
+      }
+      @media (max-width: 700px) {
+        .result-reference {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .result-message {
+        grid-column: 1 / -1;
+        margin: 4px 0 0;
+        color: var(--green);
+        font-size: 0.85rem;
+      }
+      .result-graph {
+        grid-column: 1 / -1;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+      }
+      .result-graph img {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: auto;
+        border-radius: 8px;
+      }
+
+      .loading {
+        display: none;
+        padding: 28px 15px;
+        text-align: center;
+      }
+      .loading.active {
+        display: block;
+      }
+      .dna {
+        display: block;
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 14px;
+      }
+      .dna .strand {
+        fill: none;
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        stroke-dasharray: 9 7;
+        animation: dnaFlow 1.2s linear infinite;
+      }
+      .dna .strand-a {
+        stroke: #2563eb;
+      }
+      .dna .strand-b {
+        stroke: #14b8a6;
+        animation-direction: reverse;
+      }
+      .dna .rung {
+        stroke: #94a3b8;
+        stroke-width: 2;
+        opacity: 0.8;
+        animation: rungPulse 1.2s ease-in-out infinite alternate;
+      }
+      .loading-title {
+        margin: 0 0 5px;
+        color: #1e3a8a;
+        font-weight: 800;
+      }
+      .loading-text {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      @keyframes dnaFlow {
+        to {
+          stroke-dashoffset: -32;
+        }
+      }
+      @keyframes rungPulse {
+        from {
+          opacity: 0.25;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .history-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+      .history-header h3 {
+        margin: 0 0 5px;
+        font-size: 1.25rem;
+      }
+      .history-header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .history-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 20px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+      .history-actions label,
+      .history-select {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+        color: #334155;
+        font-size: 0.86rem;
+        font-weight: 650;
+        cursor: pointer;
+      }
+      /* Anula el ocultamiento de checkbox de Materialize: aquí se usa checkbox nativo visible. */
+      .history-actions input[type="checkbox"],
+      .history-select input[type="checkbox"] {
+        position: static !important;
+        width: 17px !important;
+        height: 17px !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        appearance: auto !important;
+        accent-color: var(--primary);
+      }
+      .history-actions .btn {
+        min-height: 40px;
+      }
+      .history-count {
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+      .history-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .history-card {
+        min-width: 0;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: white;
+        transition:
+          box-shadow 0.2s,
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .history-card:hover {
+        box-shadow: 0 8px 25px #0f172a0c;
+        transform: translateY(-2px);
+      }
+      .history-card.selected {
+        border-color: #93c5fd;
+        background: #f8fbff;
+        box-shadow: 0 0 0 2px #2563eb12;
+      }
+      .history-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 13px;
+      }
+      .history-card h4 {
+        margin: 0;
+        overflow-wrap: anywhere;
+        font-size: 1rem;
+      }
+      .history-card p {
+        margin: 9px 0;
+        overflow-wrap: anywhere;
+        color: #475569;
+        font-size: 0.84rem;
+      }
+      .history-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+      .history-empty {
+        padding: 45px 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 13px;
+        background: #f8fafc;
+        color: var(--muted);
+        text-align: center;
+      }
+      .history-empty i {
+        color: #94a3b8;
+        font-size: 2rem;
+      }
+      .history-empty h4 {
+        margin: 12px 0 5px;
+        color: #334155;
+      }
+      .history-feedback {
+        display: none;
+        margin: 0 0 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 0.86rem;
+      }
+      .history-feedback.visible {
+        display: block;
+      }
+      .history-feedback.error {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .history-feedback.success {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+      }
+      .panel.history-expanded {
+        min-height: 65vh;
+      }
+      .history-expanded .history-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      /* ---------- Historial: tarjetas detalladas ---------- */
+      .history-toolbar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .history-filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #334155;
+        font-size: 0.84rem;
+        font-weight: 650;
+      }
+      .history-filter select {
+        display: block;
+        height: 40px;
+        padding: 0 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        font-weight: 600;
+      }
+      .history-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .history-card-title {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .history-card-title h4 {
+        margin: 0;
+        font-size: 1.05rem;
+        letter-spacing: -0.02em;
+      }
+      .run-id {
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: var(--primary);
+        font-size: 0.72rem;
+        font-weight: 800;
+      }
+      .run-date {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+      .history-card-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .icon-btn {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: #fff;
+        color: #64748b;
+        transition: 0.15s;
+      }
+      .icon-btn:hover {
+        border-color: #fca5a5;
+        background: #fef2f2;
+        color: var(--danger);
+      }
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 9px;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        background: #f8fafc;
+        color: #334155;
+        font-size: 0.72rem;
+        font-weight: 650;
+      }
+      .chip b {
+        color: var(--ink);
+        font-weight: 800;
+      }
+      .chip-threads {
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .score {
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fafbfd;
+      }
+      .score-label {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 650;
+      }
+      .score-value {
+        display: block;
+        overflow-wrap: anywhere;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 0.98rem;
+        font-weight: 800;
+      }
+      .score.good {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+      }
+      .score.good .score-value {
+        color: #15803d;
+      }
+      .score.warn {
+        border-color: #fde68a;
+        background: #fffbeb;
+      }
+      .score.warn .score-value {
+        color: #b45309;
+      }
+      .solution-box {
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        background: #fff;
+      }
+      .solution-box .score-label {
+        margin-bottom: 6px;
+      }
+      .coords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .coord {
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 0.78rem;
+      }
+      .coord span {
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .history-card .history-select {
+        font-size: 0.78rem;
+      }
+      .history-card a.graph-link {
+        display: block;
+      }
+      .history-card img {
+        margin-top: 10px;
+      }
+      .time-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #334155;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .history-card.expanded {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        gap: 0 24px;
+        padding: 22px;
+      }
+      .history-card.expanded .history-card-head {
+        grid-column: 1 / -1;
+      }
+      .history-card.expanded .graph-link {
+        grid-column: 2;
+        grid-row: 2 / span 5;
+        align-self: start;
+      }
+      .history-card.expanded img {
+        margin-top: 0;
+      }
+      .history-card.expanded .score-value {
+        font-size: 1.15rem;
+      }
+      .icon-btn.expand:hover {
+        border-color: #93c5fd;
+        background: #eff6ff;
+        color: var(--primary);
+      }
+      @media (max-width: 1000px) {
+        .history-card.expanded {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .history-card.expanded .graph-link {
+          grid-column: 1;
+          grid-row: auto;
+        }
+      }
+      /* ---------- Comparativo ---------- */
+      .compare-controls {
+        margin-bottom: 20px;
+        padding: 18px 20px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f8fafc;
+      }
+      .compare-functions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .compare-functions label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font-size: 0.84rem;
+        font-weight: 650;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .compare-functions label:has(input:checked) {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      .compare-functions input[type="checkbox"] {
+        position: static !important;
+        width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        appearance: auto !important;
+        accent-color: var(--primary);
+      }
+      .compare-fields {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .compare-fields .field input {
+        height: 42px;
+      }
+      .compare-feedback {
+        display: none;
+        margin: 0 0 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 0.86rem;
+      }
+      .compare-feedback.visible {
+        display: block;
+      }
+      .compare-feedback.error {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .compare-feedback.success {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+      }
+      .compare-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .compare-summary .metric-value {
+        font-size: 1.3rem;
+      }
+      .metric-sub {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.74rem;
+      }
+      .chart-panel {
+        margin-bottom: 20px;
+        padding: 20px 20px 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+      }
+      .chart-title {
+        margin: 0;
+        text-align: center;
+        font-size: 1.35rem;
+        font-weight: 850;
+        letter-spacing: -0.03em;
+      }
+      .chart-subtitle {
+        margin: 2px 0 12px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .chart-wrap {
+        position: relative;
+        height: 380px;
+      }
+      .compare-table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+      }
+      .compare-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      .compare-table th {
+        padding: 13px 14px;
+        background: #1f2937;
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 750;
+        text-align: center;
+        line-height: 1.3;
+      }
+      .compare-table th:first-child {
+        text-align: left;
+        border-radius: 13px 0 0 0;
+      }
+      .compare-table th:last-child {
+        border-radius: 0 13px 0 0;
+      }
+      .compare-table td {
+        padding: 12px 14px;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 0.86rem;
+      }
+      .compare-table td:first-child {
+        font-family: inherit;
+        font-weight: 800;
+        text-align: left;
+      }
+      .compare-table tbody tr:nth-child(even) td {
+        background: #f8fafc;
+      }
+      .compare-table tbody tr:hover td {
+        background: #eff6ff;
+      }
+      .compare-table .speed {
+        font-weight: 850;
+      }
+      .speed.up,
+      .verdict.up {
+        color: #15803d;
+      }
+      .speed.down,
+      .verdict.down {
+        color: #dc2626;
+      }
+      .verdict {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .verdict.up {
+        background: #dcfce7;
+      }
+      .verdict.down {
+        background: #fee2e2;
+      }
+      .verdict.even {
+        background: #f1f5f9;
+        color: #475569;
+      }
+      .compare-table .cell-date {
+        color: var(--muted);
+        font-family: inherit;
+        font-size: 0.76rem;
+      }
+      .compare-history {
+        margin-top: 20px;
+      }
+      .compare-history summary {
+        cursor: pointer;
+        color: #334155;
+        font-weight: 750;
+      }
+      .compare-history .compare-table-wrap {
+        margin-top: 12px;
+      }
+      .compare-empty {
+        padding: 45px 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 13px;
+        background: #f8fafc;
+        color: var(--muted);
+        text-align: center;
+      }
+      .compare-empty i {
+        color: #94a3b8;
+        font-size: 2rem;
+      }
+      .compare-empty h4 {
+        margin: 12px 0 5px;
+        color: #334155;
+      }
+      @media (max-width: 1000px) {
+        .compare-fields,
+        .compare-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 600px) {
+        .compare-fields,
+        .compare-summary,
+        .score-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .chart-wrap {
+          height: 300px;
+        }
+      }
+      @media (min-width: 1500px) {
+        .history-expanded .history-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 1000px) {
+        .field-grid,
+        #resultado-contenido {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .history-grid,
+        .history-expanded .history-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .benchmark-body {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      @media (max-width: 600px) {
+        .container {
+          width: calc(100% - 20px);
+          padding-top: 10px;
+        }
+        .hero {
+          display: block;
+          padding: 22px;
+        }
+        .hero-note {
+          display: inline-flex;
+          margin-top: 16px;
+          white-space: normal;
+        }
+        .panel {
+          padding: 17px;
+        }
+        .tabs {
+          gap: 0;
+        }
+        .tab-btn {
+          flex: 1;
+          justify-content: center;
+          padding: 12px 8px;
+          font-size: 0.82rem;
+        }
+        .function-grid,
+        .benchmark-facts {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .field-grid,
+        #resultado-contenido,
+        .history-grid,
+        .history-expanded .history-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .actions {
+          flex-direction: column;
+        }
+        .btn-run {
+          flex: auto;
+          width: 100%;
+        }
+        .benchmark-top {
+          padding: 16px;
+        }
+        .benchmark-body {
+          padding: 15px;
+        }
+        .benchmark-tag {
+          white-space: normal;
+          text-align: center;
+        }
+        .history-actions {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .history-actions .btn {
+          width: 100%;
+        }
+      }
+      /* ---- Dimensiones, convergencia, variantes y Excel ---- */
+      .field input:disabled {
+        border-style: dashed;
+        background: #f1f5f9;
+        color: #64748b;
+        -webkit-text-fill-color: #64748b;
+        cursor: not-allowed;
+      }
+      .btn-excel {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+      }
+      .btn-excel:hover {
+        border-color: #86efac;
+        background: #dcfce7;
+        color: #14532d;
+      }
+      .result-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .conv-panel {
+        grid-column: 1 / -1;
+        min-width: 0;
+        padding: 16px 16px 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .conv-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+        margin-bottom: 10px;
+      }
+      .conv-title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+      .conv-sub {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+      .conv-modo {
+        display: inline-flex;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+      .conv-modo-btn {
+        padding: 6px 12px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #475569;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .conv-modo-btn[aria-pressed="true"] {
+        background: var(--primary);
+        color: #fff;
+      }
+      .conv-modo-btn:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+      .conv-wrap {
+        position: relative;
+        height: 340px;
+      }
+      .history-actions-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .variantes-dialog {
+        width: min(1180px, calc(100% - 24px));
+        max-height: calc(100vh - 32px);
+        padding: 0;
+        border: 0;
+        border-radius: 16px;
+        background: var(--canvas);
+        color: var(--ink);
+        box-shadow: 0 24px 60px #0f172a40;
+      }
+      .variantes-dialog::backdrop {
+        background: #0f172a8c;
+      }
+      .variantes-head,
+      .variantes-pie {
+        position: sticky;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 20px;
+        background: #fff;
+      }
+      .variantes-head {
+        top: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .variantes-head h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 850;
+      }
+      .variantes-head p {
+        margin: 2px 0 0;
+        font-size: 0.85rem;
+      }
+      .variantes-pie {
+        bottom: 0;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--line);
+      }
+      #variantes-cuerpo {
+        display: grid;
+        gap: 14px;
+        padding: 18px 20px;
+      }
+      .variantes-aviso {
+        margin: 0;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 0.86rem;
+      }
+      .variantes-aviso.info {
+        background: #eff6ff;
+        color: #1e40af;
+      }
+      .variantes-aviso.warn {
+        background: #fffbeb;
+        color: #92400e;
+      }
+      .variantes-tabla th,
+      .variantes-tabla td {
+        white-space: nowrap;
+      }
+      /* Dominio de búsqueda opcional */
+      .field-optional {
+        font-weight: 400;
+        color: #64748b;
+      }
+      .field-dominio-info {
+        align-self: end;
+        gap: 8px;
+      }
+      #dominio-aviso[hidden] {
+        display: none;
+      }
+      .result-reference .ref-note-warn {
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #fffbeb;
+        color: #92400e;
+      }
+      .variantes-tabla th.difiere {
+        background: #a16207;
+      }
+      .variantes-tabla td.difiere {
+        background: #fef9c3 !important;
+        font-weight: 800;
+      }
+      .serie-color {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 7px;
+        border-radius: 3px;
+        vertical-align: -1px;
+      }
+      .badge-mejor {
+        margin-left: 7px;
+        padding: 1px 7px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 0.7rem;
+        font-weight: 800;
+      }
+      @media (max-width: 600px) {
+        .conv-wrap {
+          height: 280px;
+        }
+        .history-actions-buttons,
+        .result-actions {
+          width: 100%;
+          flex-direction: column;
+        }
+        .result-actions .btn {
+          width: 100%;
+        }
+        .variantes-head,
+        .variantes-pie,
+        #variantes-cuerpo {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+        .variantes-pie .btn {
+          flex: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="hero">
+        <div>
+          <div class="eyebrow">
+            <i class="fa-solid fa-flask"></i> Laboratorio de optimización
+          </div>
+          <h1 class="brand">GA Lab</h1>
+          <p>Algoritmos genéticos y concurrencia</p>
+        </div>
+        <div class="hero-note">
+          <i class="fa-solid fa-chart-line"></i> Configura · Ejecuta · Analiza
+        </div>
+      </header>
+
+      <main>
+        <section class="panel" id="panel-principal">
+          <div class="panel-heading">
+            <div class="heading-icon"><i class="fa-solid fa-sliders"></i></div>
+            <div>
+              <h2>Laboratorio de experimentos</h2>
+              <p class="muted">
+                Configura tus parámetros y consulta tus resultados.
+              </p>
+            </div>
+          </div>
+
+          <nav
+            class="tabs"
+            aria-label="Secciones del laboratorio"
+            style="background: transparent"
+          >
+            <button
+              type="button"
+              class="tab-btn active"
+              data-tab="experimento"
+              aria-selected="true"
+            >
+              <i class="fa-solid fa-flask"></i> Experimento
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              data-tab="historial"
+              aria-selected="false"
+            >
+              <i class="fa-solid fa-clock-rotate-left"></i> Historial
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              data-tab="comparativo"
+              aria-selected="false"
+            >
+              <i class="fa-solid fa-gauge-high"></i> Comparativo
+            </button>
+          </nav>
+
+          <div id="tab-experimento" class="tab-content active">
+            <form id="form-experimento">
+              <div class="section-label">1. Selecciona la función objetivo</div>
+              <div class="function-grid" id="funciones-radio">
+                {% for nombre in funciones %}
+                <div class="function-option">
+                  <input
+                    type="radio"
+                    id="funcion_{{ forloop.counter }}"
+                    name="funcion"
+                    value="{{ nombre }}"
+                    data-escalable="{% if nombre in escalables %}1{% else %}0{% endif %}"
+                    {% if nombre == "Trid" %}checked{% endif %}
+                    required
+                  />
+                  <label for="funcion_{{ forloop.counter }}"
+                    ><span class="radio-dot"></span
+                    ><span>{{ nombre }}</span></label
+                  >
+                  <button
+                    type="button"
+                    class="run-mini"
+                    data-funcion="{{ nombre }}"
+                    aria-label="Ejecutar {{ nombre }}"
+                  >
+                    <i class="fa-solid fa-play"></i> Ejecutar
+                  </button>
+                </div>
+                {% endfor %}
+              </div>
+
+              <!-- Card informativa: se muestra/oculta con la selección de radio. Se oculta al entrar a Historial porque toda la pestaña Experimento queda escondida. -->
+              <section
+                id="benchmark-card"
+                class="benchmark-card card-panel hide"
+                aria-live="polite"
+                aria-labelledby="benchmark-title"
+              >
+                <div class="benchmark-top">
+                  <div class="benchmark-title-wrap">
+                    <div class="benchmark-icon">
+                      <i class="fa-solid fa-square-root-variable"></i>
+                    </div>
+                    <div>
+                      <h3 class="benchmark-title" id="benchmark-title">
+                        Información del benchmark
+                      </h3>
+                      <p class="benchmark-subtitle" id="benchmark-subtitle">
+                        Función de prueba para optimización
+                      </p>
+                    </div>
+                  </div>
+                  <span class="benchmark-tag" id="benchmark-tag"
+                    >Benchmark</span
+                  >
+                </div>
+                <div class="benchmark-body">
+                  <div>
+                    <p
+                      class="benchmark-description"
+                      id="benchmark-description"
+                    ></p>
+                    <div class="benchmark-facts">
+                      <div class="benchmark-fact">
+                        <span class="benchmark-fact-label">Dimensiones</span
+                        ><span
+                          class="benchmark-fact-value"
+                          id="benchmark-dimensions"
+                        ></span>
+                      </div>
+                      <div class="benchmark-fact">
+                        <span class="benchmark-fact-label"
+                          >Dominio de búsqueda</span
+                        ><span
+                          class="benchmark-fact-value"
+                          id="benchmark-domain"
+                        ></span>
+                      </div>
+                      <div class="benchmark-fact">
+                        <span class="benchmark-fact-label"
+                          >Óptimo global conocido</span
+                        ><span
+                          class="benchmark-fact-value"
+                          id="benchmark-optimum"
+                        ></span>
+                      </div>
+                      <div class="benchmark-fact">
+                        <span class="benchmark-fact-label">Punto óptimo</span
+                        ><span
+                          class="benchmark-fact-value"
+                          id="benchmark-point"
+                        ></span>
+                      </div>
+                    </div>
+                    <p class="benchmark-note" id="benchmark-note"></p>
+                  </div>
+                  <div class="benchmark-formula-box">
+                    <div class="formula-label">
+                      <i class="fa-solid fa-square-root-variable"></i> Fórmula
+                      matemática
+                    </div>
+                    <div class="formula" id="benchmark-formula"></div>
+                  </div>
+                </div>
+              </section>
+
+              <div class="section-label">2. Parámetros del algoritmo</div>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="dimensiones">Dimensiones (d)</label
+                  ><input
+                    id="dimensiones"
+                    name="dimensiones"
+                    type="number"
+                    min="2"
+                    max="{{ dimensiones_max }}"
+                    step="1"
+                    value="2"
+                    required
+                  /><span class="field-hint" id="dimensiones-hint"
+                    >Trid y Zakharov admiten más de 2 variables.</span
+                  >
+                </div>
+                <div class="field">
+                  <label for="poblacion">Tamaño de población</label
+                  ><input
+                    id="poblacion"
+                    name="poblacion"
+                    type="number"
+                    min="2"
+                    max="10000"
+                    value="100"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="generaciones">Generaciones</label
+                  ><input
+                    id="generaciones"
+                    name="generaciones"
+                    type="number"
+                    min="1"
+                    max="100000"
+                    value="200"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="probabilidad_cruza">Probabilidad de cruza</label
+                  ><input
+                    id="probabilidad_cruza"
+                    name="probabilidad_cruza"
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.85"
+                    required
+                  /><span class="field-hint">Rango: 0 a 1</span>
+                </div>
+                <div class="field">
+                  <label for="probabilidad_mutacion"
+                    >Probabilidad de mutación</label
+                  ><input
+                    id="probabilidad_mutacion"
+                    name="probabilidad_mutacion"
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.10"
+                    required
+                  /><span class="field-hint">Rango: 0 a 1</span>
+                </div>
+                <div class="field">
+                  <label for="elitismo">Elitismo</label
+                  ><input
+                    id="elitismo"
+                    name="elitismo"
+                    type="number"
+                    min="1"
+                    value="2"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="torneo">Tamaño del torneo</label
+                  ><input
+                    id="torneo"
+                    name="torneo"
+                    type="number"
+                    min="2"
+                    value="3"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="num_hilos">Número de hilos</label
+                  ><input
+                    id="num_hilos"
+                    name="num_hilos"
+                    type="number"
+                    min="1"
+                    max="64"
+                    value="4"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="semilla">Semilla aleatoria</label
+                  ><input
+                    id="semilla"
+                    name="semilla"
+                    type="number"
+                    value="42"
+                    required
+                  /><span class="field-hint"
+                    >La misma semilla permite reproducir la corrida si el resto
+                    de condiciones también se mantiene.</span
+                  >
+                </div>
+                <div class="field">
+                  <label for="limite_inferior"
+                    >Dominio: límite inferior
+                    <span class="field-optional">(opcional)</span></label
+                  ><input
+                    id="limite_inferior"
+                    name="limite_inferior"
+                    type="number"
+                    step="any"
+                    min="-1000000"
+                    max="1000000"
+                    aria-describedby="dominio-hint"
+                  />
+                </div>
+                <div class="field">
+                  <label for="limite_superior"
+                    >Dominio: límite superior
+                    <span class="field-optional">(opcional)</span></label
+                  ><input
+                    id="limite_superior"
+                    name="limite_superior"
+                    type="number"
+                    step="any"
+                    min="-1000000"
+                    max="1000000"
+                    aria-describedby="dominio-hint"
+                  />
+                </div>
+                <div class="field field-dominio-info">
+                  <span class="field-hint" id="dominio-hint"
+                    >Vacío = dominio estándar de la función.</span
+                  >
+                  <p id="dominio-aviso" class="variantes-aviso" role="status" hidden></p>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button
+                  class="btn btn-primary btn-run"
+                  id="btn-ejecutar"
+                  type="submit"
+                >
+                  <i class="fa-solid fa-play"></i> Ejecutar experimento
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  id="btn-defaults"
+                  type="button"
+                >
+                  <i class="fa-solid fa-sliders"></i> Valores iniciales
+                </button>
+                <button class="btn btn-danger" id="btn-clear" type="button">
+                  <i class="fa-solid fa-eraser"></i> Limpiar resultados
+                </button>
+              </div>
+            </form>
+
+            <div class="loading" id="loading" role="status" aria-live="polite">
+              <svg class="dna" viewBox="0 0 100 100" aria-hidden="true">
+                <path
+                  class="strand strand-a"
+                  d="M25 8 C80 20 20 35 75 50 S20 80 75 92"
+                ></path>
+                <path
+                  class="strand strand-b"
+                  d="M75 8 C20 20 80 35 25 50 S80 80 25 92"
+                ></path>
+                <g class="rung">
+                  <line x1="33" y1="17" x2="67" y2="17"></line>
+                  <line x1="44" y1="29" x2="56" y2="29"></line>
+                  <line x1="30" y1="41" x2="70" y2="41"></line>
+                  <line x1="30" y1="59" x2="70" y2="59"></line>
+                  <line x1="44" y1="71" x2="56" y2="71"></line>
+                  <line x1="33" y1="83" x2="67" y2="83"></line>
+                </g>
+              </svg>
+              <p class="loading-title">Evolucionando población...</p>
+              <p class="loading-text">
+                El algoritmo está buscando la mejor solución.
+              </p>
+            </div>
+
+            <section id="resultado" class="result" aria-live="polite">
+              <div class="result-header">
+                <h3>
+                  <i class="fa-solid fa-chart-line"></i> Resultado del
+                  experimento
+                </h3>
+                <span class="muted" id="resultado-estado"></span>
+              </div>
+              <div id="resultado-contenido"></div>
+            </section>
+          </div>
+
+          <div id="tab-historial" class="tab-content">
+            <div class="history-header">
+              <div>
+                <h3>Historial de corridas</h3>
+                <p id="history-summary">
+                  Consulta los experimentos guardados y compara sus resultados.
+                </p>
+              </div>
+              <div class="history-toolbar">
+                <label class="history-filter" for="filtro-funcion">
+                  <i class="fa-solid fa-filter"></i>
+                  <select id="filtro-funcion">
+                    <option value="">Todas las funciones</option>
+                    {% for nombre in funciones %}
+                    <option value="{{ nombre }}">{{ nombre }}</option>
+                    {% endfor %}
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  id="btn-actualizar-historial"
+                >
+                  <i class="fa-solid fa-rotate"></i> Actualizar
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-excel"
+                  id="btn-exportar-historial"
+                  title="Exporta todas las corridas, o solo la función filtrada"
+                >
+                  <i class="fa-solid fa-file-excel"></i> Exportar a Excel
+                </button>
+              </div>
+            </div>
+
+            <form id="csrf-form" hidden>{% csrf_token %}</form>
+            <div
+              id="history-feedback"
+              class="history-feedback"
+              role="status"
+              aria-live="polite"
+            ></div>
+
+            <div class="history-actions" id="history-actions" hidden>
+              <label for="seleccionar-todas"
+                ><input type="checkbox" id="seleccionar-todas" /><span
+                  >Seleccionar todas</span
+                ></label
+              >
+              <span class="history-count" id="history-count"
+                >0 corridas seleccionadas</span
+              >
+              <div class="history-actions-buttons">
+                <button
+                  type="button"
+                  id="comparar-seleccionadas"
+                  class="btn btn-primary"
+                  disabled
+                  title="Selecciona de 2 a 8 corridas"
+                >
+                  <i class="fa-solid fa-chart-line"></i> Comparar variantes
+                </button>
+                <button
+                  type="button"
+                  id="exportar-seleccionadas"
+                  class="btn btn-excel"
+                  disabled
+                >
+                  <i class="fa-solid fa-file-excel"></i> Exportar seleccionadas
+                </button>
+                <button
+                  type="button"
+                  id="eliminar-seleccionadas"
+                  class="btn btn-danger"
+                  disabled
+                >
+                  <i class="fa-solid fa-trash"></i> Eliminar seleccionadas
+                </button>
+              </div>
+            </div>
+
+            <div id="historial-lista">
+              <div class="history-empty">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h4>Consulta tus experimentos</h4>
+                <p>Estamos preparando el historial...</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-comparativo" class="tab-content">
+            <div class="history-header">
+              <div>
+                <h3>Comparativo: secuencial vs paralelo</h3>
+                <p>
+                  Se construye con las corridas ya guardadas en el historial:
+                  dentro de las últimas N corridas, por cada función se
+                  promedian los tiempos de las corridas con 1 hilo (secuencial)
+                  y los de las corridas con varios hilos (paralelo). No ejecuta
+                  nada nuevo.
+                </p>
+              </div>
+              <div class="history-toolbar">
+                <label class="history-filter" for="cmp-ultimas-select">
+                  <i class="fa-solid fa-layer-group"></i>
+                  <select id="cmp-ultimas-select">
+                    <option value="10">Últimas 10 corridas</option>
+                    <option value="30">Últimas 30 corridas</option>
+                    <option value="50">Últimas 50 corridas</option>
+                    <option value="100" selected>Últimas 100 corridas</option>
+                    <option value="0">Todas las corridas</option>
+                  </select>
+                </label>
+                <label class="history-filter" for="cmp-hilos-select">
+                  <i class="fa-solid fa-microchip"></i>
+                  <select id="cmp-hilos-select">
+                    <option value="auto">Paralelo: cualquier N &gt; 1</option>
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  id="btn-actualizar-comparativo"
+                >
+                  <i class="fa-solid fa-rotate"></i> Actualizar
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="compare-feedback"
+              class="compare-feedback"
+              role="status"
+              aria-live="polite"
+            ></div>
+
+            <div id="compare-summary" class="compare-summary" hidden></div>
+
+            <div class="chart-panel" id="chart-panel" hidden>
+              <h3 class="chart-title">Comparación por Hilos y Concurrencia</h3>
+              <p class="chart-subtitle">Tiempo de ejecución (segundos)</p>
+              <div class="chart-wrap">
+                <canvas id="grafica-comparativo"></canvas>
+              </div>
+            </div>
+
+            <div id="compare-table-container"></div>
+
+            <details class="compare-history" id="compare-history" hidden>
+              <summary>
+                <i class="fa-solid fa-list"></i> Corridas usadas en la
+                comparación (<span id="compare-history-count">0</span>)
+              </summary>
+              <div class="compare-table-wrap">
+                <table class="compare-table">
+                  <thead>
+                    <tr>
+                      <th>Función</th>
+                      <th>Rol</th>
+                      <th>Corrida</th>
+                      <th>Fecha</th>
+                      <th>Pob. / Gen. / Hilos / d</th>
+                      <th>Tiempo (s)</th>
+                      <th>Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody id="compare-history-body"></tbody>
+                </table>
+              </div>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog
+      id="dialogo-variantes"
+      class="variantes-dialog"
+      aria-labelledby="variantes-titulo"
+    >
+      <div class="variantes-head">
+        <div>
+          <h3 id="variantes-titulo">
+            <i class="fa-solid fa-chart-line"></i> Comparar variantes
+          </h3>
+          <p class="muted" id="variantes-subtitulo"></p>
+        </div>
+        <button
+          type="button"
+          class="icon-btn"
+          data-cerrar
+          aria-label="Cerrar comparación"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="variantes-cuerpo"></div>
+      <div class="variantes-pie">
+        <button type="button" class="btn btn-excel" id="variantes-excel">
+          <i class="fa-solid fa-file-excel"></i> Exportar estas a Excel
+        </button>
+        <button type="button" class="btn btn-secondary" data-cerrar>
+          Cerrar
+        </button>
+      </div>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/@materializecss/materialize@2.2.2/dist/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- ?v= obliga al navegador a bajar la versión nueva; súbelo al cambiar el JS -->
+    <script src="{% static 'core/variantes.js' %}?v=3"></script>
+    <script>
+      "use strict";
+
+      const form = document.getElementById("form-experimento");
+      const botonEjecutar = document.getElementById("btn-ejecutar");
+      const botonDefaults = document.getElementById("btn-defaults");
+      const botonClear = document.getElementById("btn-clear");
+      const botonActualizarHistorial = document.getElementById(
+        "btn-actualizar-historial",
+      );
+      const botonEliminarSeleccionadas = document.getElementById(
+        "eliminar-seleccionadas",
+      );
+      const seleccionarTodas = document.getElementById("seleccionar-todas");
+      const botonCompararSeleccionadas = document.getElementById(
+        "comparar-seleccionadas",
+      );
+      const botonExportarSeleccionadas = document.getElementById(
+        "exportar-seleccionadas",
+      );
+      const historyActions = document.getElementById("history-actions");
+      const historyCount = document.getElementById("history-count");
+      const historyFeedback = document.getElementById("history-feedback");
+      const resultado = document.getElementById("resultado");
+      const contenidoResultado = document.getElementById("resultado-contenido");
+      const resultadoEstado = document.getElementById("resultado-estado");
+      const loading = document.getElementById("loading");
+      const panelPrincipal = document.getElementById("panel-principal");
+      const historialLista = document.getElementById("historial-lista");
+      const benchmarkCard = document.getElementById("benchmark-card");
+
+      const VALORES_INICIALES = {
+        dimensiones: "2",
+        poblacion: "100",
+        generaciones: "200",
+        probabilidad_cruza: "0.85",
+        probabilidad_mutacion: "0.10",
+        elitismo: "2",
+        torneo: "3",
+        num_hilos: "4",
+        semilla: "42",
+        limite_inferior: "",
+        limite_superior: "",
+      };
+
+      /* Fórmulas de referencia de los benchmarks clásicos. */
+      const BENCHMARKS = {
+        shubert: {
+          title: "Shubert Function",
+          subtitle: "Función multimodal para optimización global",
+          tag: "Múltiples óptimos globales",
+          dimensions: "2 variables",
+          domain: "x₁, x₂ ∈ [−10, 10]",
+          optimum: "≈ −186.7309",
+          point: "Múltiples puntos globales",
+          description:
+            "Función muy multimodal: presenta numerosos mínimos locales y múltiples mínimos globales. Es útil para evaluar si un algoritmo puede explorar un paisaje con muchas soluciones engañosas.",
+          formula: String.raw`\[ f(\mathbf{x}) = \left(\sum_{i=1}^{5} i\cos((i+1)x_1+i)\right)\left(\sum_{i=1}^{5} i\cos((i+1)x_2+i)\right) \]`,
+          note: "La ubicación del mejor punto puede variar entre ejecuciones; compara principalmente el valor de la función con el mínimo conocido.",
+        },
+        trid: {
+          title: "Trid Function",
+          subtitle: "Benchmark escalable según el número de variables",
+          tag: "Dimensión variable",
+          dimensions: "d variables",
+          domain: "xᵢ ∈ [−d², d²]",
+          optimum: "−d(d + 4)(d − 1) / 6",
+          point: "xᵢ* = i(d + 1 − i)",
+          description:
+            "Prueba de optimización cuya dimensión puede crecer. En su definición estándar no tiene mínimos locales distintos del mínimo global, por lo que permite estudiar cómo afectan la dimensión y los parámetros del algoritmo.",
+          formula: String.raw`\[ f(\mathbf{x}) = \sum_{i=1}^{d}(x_i-1)^2 - \sum_{i=2}^{d}x_ix_{i-1} \]`,
+          note: "Para d = 2, el óptimo es x* = (2, 2) y f(x*) = −2. El valor de referencia depende de la dimensión d usada por el backend.",
+        },
+        zakharov: {
+          title: "Zakharov Function",
+          subtitle: "Función continua y escalable",
+          tag: "Óptimo en el origen",
+          dimensions: "d variables",
+          domain: "xᵢ ∈ [−5, 10]",
+          optimum: "0",
+          point: "(0, …, 0)",
+          description:
+            "Función de referencia continua con un único mínimo global en el origen. Los términos cuadrático y de potencias acoplan las variables y hacen crecer rápidamente el valor al alejarse del óptimo.",
+          formula: String.raw`\[ f(\mathbf{x}) = \sum_{i=1}^{d}x_i^2 + \left(\sum_{i=1}^{d}0.5ix_i\right)^2 + \left(\sum_{i=1}^{d}0.5ix_i\right)^4 \]`,
+          note: "El mínimo conocido es cero para cualquier dimensión d, alcanzado cuando todas las variables valen cero.",
+        },
+        beale: {
+          title: "Beale Function",
+          subtitle:
+            "Función bidimensional con valles y pendientes pronunciadas",
+          tag: "Óptimo conocido",
+          dimensions: "2 variables",
+          domain: "x₁, x₂ ∈ [−4.5, 4.5]",
+          optimum: "0",
+          point: "(3, 0.5)",
+          description:
+            "Benchmark bidimensional con términos polinomiales. La superficie presenta regiones con valores grandes y un mínimo global estrecho, útil para observar la precisión final del algoritmo.",
+          formula: String.raw`\[\begin{aligned} f(\mathbf{x})={}&(1.5-x_1+x_1x_2)^2\\&+(2.25-x_1+x_1x_2^2)^2\\&+(2.625-x_1+x_1x_2^3)^2 \end{aligned}\]`,
+          note: "El óptimo global de referencia se encuentra en (3, 0.5), donde los tres términos cuadrados valen cero.",
+        },
+        camel: {
+          title: "Six-Hump Camel Function",
+          subtitle: "Función bidimensional con varios mínimos",
+          tag: "Dos óptimos globales",
+          dimensions: "2 variables",
+          domain: "x₁ ∈ [−3, 3], x₂ ∈ [−2, 2]",
+          optimum: "≈ −1.031628",
+          point: "(±0.0898, ∓0.7126)",
+          description:
+            "Función multimodal conocida por sus seis mínimos locales, dos de ellos globales. Sirve para probar la capacidad del algoritmo de explorar diferentes valles y encontrar uno de los dos mejores puntos.",
+          formula: String.raw`\[ f(\mathbf{x}) = (4-2.1x_1^2+\tfrac{x_1^4}{3})x_1^2+x_1x_2+(-4+4x_2^2)x_2^2 \]`,
+          note: "Los dos mínimos globales son simétricos: aproximadamente (0.0898, −0.7126) y (−0.0898, 0.7126).",
+        },
+      };
+
+      function normalizarNombre(nombre) {
+        return String(nombre || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]/g, "");
+      }
+
+      function obtenerBenchmark(nombre) {
+        const n = normalizarNombre(nombre);
+        if (n.includes("shubert")) return BENCHMARKS.shubert;
+        if (n.includes("trid")) return BENCHMARKS.trid;
+        if (n.includes("zakharov")) return BENCHMARKS.zakharov;
+        if (n.includes("beale")) return BENCHMARKS.beale;
+        if (n.includes("camel") || n.includes("sixhump"))
+          return BENCHMARKS.camel;
+        return null;
+      }
+
+      async function typesetFormula() {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          try {
+            await window.MathJax.typesetPromise([
+              document.getElementById("benchmark-formula"),
+            ]);
+          } catch (error) {
+            console.warn("No se pudo renderizar la fórmula matemática:", error);
+          }
+        }
+      }
+
+      function actualizarBenchmark() {
+        const radio = form.querySelector('input[name="funcion"]:checked');
+        if (!radio) {
+          benchmarkCard.classList.add("hide");
+          return;
+        }
+
+        const info = obtenerBenchmark(radio.value);
+        if (!info) {
+          benchmarkCard.classList.remove("hide");
+          document.getElementById("benchmark-title").textContent = radio.value;
+          document.getElementById("benchmark-subtitle").textContent =
+            "Información del benchmark seleccionado";
+          document.getElementById("benchmark-tag").textContent =
+            "Referencia pendiente";
+          document.getElementById("benchmark-description").textContent =
+            "No hay una ficha documentada para esta función en el template. Puedes ejecutar el experimento normalmente; esta ficha es informativa y no modifica el algoritmo.";
+          document.getElementById("benchmark-dimensions").textContent =
+            "Consulta la implementación";
+          document.getElementById("benchmark-domain").textContent =
+            "Consulta la implementación";
+          document.getElementById("benchmark-optimum").textContent =
+            "No configurado";
+          document.getElementById("benchmark-point").textContent =
+            "No configurado";
+          document.getElementById("benchmark-formula").textContent =
+            "Fórmula no documentada en este template.";
+          document.getElementById("benchmark-note").textContent =
+            "La información de esta tarjeta no se envía al servidor.";
+          return;
+        }
+
+        benchmarkCard.classList.remove("hide");
+        document.getElementById("benchmark-title").textContent = info.title;
+        document.getElementById("benchmark-subtitle").textContent =
+          info.subtitle;
+        document.getElementById("benchmark-tag").textContent = info.tag;
+        document.getElementById("benchmark-description").textContent =
+          info.description;
+        document.getElementById("benchmark-dimensions").textContent =
+          info.dimensions;
+        document.getElementById("benchmark-domain").textContent = info.domain;
+        document.getElementById("benchmark-optimum").textContent = info.optimum;
+        document.getElementById("benchmark-point").textContent = info.point;
+        document.getElementById("benchmark-formula").innerHTML = info.formula;
+        document.getElementById("benchmark-note").textContent = info.note;
+        GAVariantes.sincronizarDimensiones(form);
+        typesetFormula();
+      }
+
+      ["dimensiones", "limite_inferior", "limite_superior"].forEach((id) =>
+        document.getElementById(id).addEventListener("input", actualizarBenchmark),
+      );
+
+      document.querySelectorAll('input[name="funcion"]').forEach((radio) => {
+        radio.addEventListener("change", actualizarBenchmark);
+      });
+
+      document.querySelectorAll(".run-mini").forEach((boton) => {
+        boton.addEventListener("click", () => {
+          const radio = boton.parentElement.querySelector('input[name="funcion"]');
+          if (radio && !radio.checked) {
+            radio.checked = true;
+            actualizarBenchmark();
+          }
+          if (botonEjecutar.disabled) return;
+          form.requestSubmit();
+          resultado.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      function cambiarTab(nombre) {
+        document.querySelectorAll(".tab-btn").forEach((boton) => {
+          const activo = boton.dataset.tab === nombre;
+          boton.classList.toggle("active", activo);
+          boton.setAttribute("aria-selected", String(activo));
+        });
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.classList.toggle("active", tab.id === `tab-${nombre}`);
+        });
+        panelPrincipal.classList.toggle(
+          "history-expanded",
+          nombre === "historial",
+        );
+        // El card y el radio seleccionado permanecen en Experimento; al volver se conserva la selección.
+        if (nombre === "historial") cargarHistorial();
+        if (nombre === "comparativo") cargarComparativo();
+      }
+
+      document.querySelectorAll(".tab-btn").forEach((boton) => {
+        boton.addEventListener("click", () => cambiarTab(boton.dataset.tab));
+      });
+
+      function limpiarResultados() {
+        GAVariantes.destruir("resultado");
+        resultado.classList.remove("visible", "error");
+        contenidoResultado.replaceChildren();
+        resultadoEstado.textContent = "";
+        loading.classList.remove("active");
+      }
+
+      botonClear.addEventListener("click", limpiarResultados);
+
+      botonDefaults.addEventListener("click", () => {
+        Object.entries(VALORES_INICIALES).forEach(([nombre, valor]) => {
+          const campo = form.elements.namedItem(nombre);
+          if (campo) campo.value = valor;
+        });
+        const trid = Array.from(
+          form.querySelectorAll('input[name="funcion"]'),
+        ).find((radio) => normalizarNombre(radio.value) === "trid");
+        if (trid) trid.checked = true;
+        else {
+          const primera = form.querySelector('input[name="funcion"]');
+          if (primera) primera.checked = true;
+        }
+        actualizarBenchmark();
+        limpiarResultados();
+      });
+
+      function crearElemento(tag, clase, texto) {
+        const elemento = document.createElement(tag);
+        if (clase) elemento.className = clase;
+        if (texto !== undefined && texto !== null)
+          elemento.textContent = String(texto);
+        return elemento;
+      }
+
+      function mostrarError(mensaje) {
+        loading.classList.remove("active");
+        resultado.classList.add("visible", "error");
+        resultadoEstado.textContent = "Error";
+        contenidoResultado.replaceChildren();
+        contenidoResultado.appendChild(
+          crearElemento("p", "result-message", mensaje),
+        );
+      }
+
+      function mostrarResultados(datos) {
+        contenidoResultado.replaceChildren();
+
+        const info = obtenerBenchmark(datos.funcion);
+        const conocido = Number(datos.minimo_conocido);
+        const obtenido = Number(datos.valor_obtenido);
+        const errorAbs = Math.abs(obtenido - conocido);
+        const cerca = Number.isFinite(errorAbs) && errorAbs < 1e-3;
+        const ref = crearElemento("div", "result-reference");
+        const bloques = [
+          ["Óptimo global del benchmark", formatearNumero(conocido), ""],
+          [
+            "Valor obtenido",
+            formatearNumero(obtenido),
+            cerca ? "ok" : "far",
+          ],
+          [
+            "Error absoluto",
+            Number.isFinite(errorAbs) ? errorAbs.toExponential(3) : "—",
+            cerca ? "ok" : "far",
+          ],
+        ];
+        bloques.forEach(([l, v, c]) => {
+          const b = crearElemento("div");
+          b.appendChild(crearElemento("span", "ref-label", l));
+          b.appendChild(crearElemento("span", `ref-value ${c}`, v));
+          ref.appendChild(b);
+        });
+        const nota = crearElemento(
+          "p",
+          "ref-note",
+          `${info ? info.title : datos.funcion}: óptimo ${info ? info.optimum : formatearNumero(conocido)} en ${info ? info.point : "punto no documentado"}. ` +
+            (cerca
+              ? "El algoritmo alcanzó el óptimo conocido (error < 0.001)."
+              : "El resultado aún está lejos del óptimo conocido."),
+        );
+        ref.appendChild(nota);
+        if (datos.optimo_en_dominio === false)
+          ref.appendChild(
+            crearElemento(
+              "p",
+              "ref-note ref-note-warn",
+              `El óptimo global queda fuera del dominio ${GAVariantes.textoDominio(datos)}: este error mide qué tan cerca quedó el GA del borde, no si encontró el óptimo.`,
+            ),
+          );
+        contenidoResultado.appendChild(ref);
+        const campos = [
+          ["ID de corrida", datos.id],
+          ["Función", datos.funcion],
+          ["Dimensiones", datos.dimensiones],
+          ["Semilla", datos.semilla],
+          ["Dominio de búsqueda", GAVariantes.textoDominio(datos)],
+          ["Mejor solución", JSON.stringify(datos.mejor_solucion)],
+          ["Valor obtenido", datos.valor_obtenido],
+          ["Mínimo conocido", datos.minimo_conocido],
+          [
+            "Tiempo de ejecución",
+            Number.isFinite(Number(datos.tiempo_segundos))
+              ? Number(datos.tiempo_segundos).toFixed(6) + " s"
+              : datos.tiempo_segundos,
+          ],
+        ];
+
+        campos.forEach(([etiqueta, valor]) => {
+          const tarjeta = crearElemento("div", "metric");
+          tarjeta.appendChild(crearElemento("div", "metric-label", etiqueta));
+          tarjeta.appendChild(
+            crearElemento("div", "metric-value", valor ?? "No disponible"),
+          );
+          contenidoResultado.appendChild(tarjeta);
+        });
+
+        if (Array.isArray(datos.convergencia) && datos.convergencia.length) {
+          GAVariantes.panelConvergencia(contenidoResultado, "resultado", [datos], {
+            titulo: `Convergencia · ${datos.funcion} con d = ${datos.dimensiones}`,
+          });
+        } else if (datos.grafica_convergencia) {
+          const contenedorGrafica = crearElemento("div", "result-graph");
+          const imagen = document.createElement("img");
+          imagen.src = datos.grafica_convergencia;
+          imagen.alt = "Gráfica de convergencia del algoritmo genético";
+          imagen.loading = "lazy";
+          contenedorGrafica.appendChild(imagen);
+          contenidoResultado.appendChild(contenedorGrafica);
+        }
+
+        contenidoResultado.appendChild(
+          crearElemento(
+            "p",
+            "result-message",
+            "Experimento guardado correctamente.",
+          ),
+        );
+        const acciones = crearElemento("div", "result-actions");
+        acciones.appendChild(
+          GAVariantes.botonExcel({ ids: [datos.id] }, "Exportar esta corrida a Excel"),
+        );
+        contenidoResultado.appendChild(acciones);
+        resultado.classList.remove("error");
+        resultado.classList.add("visible");
+        resultadoEstado.textContent = "Finalizado";
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+
+        const parametros = new URLSearchParams(new FormData(form));
+        botonEjecutar.disabled = true;
+        document.querySelectorAll(".run-mini").forEach((b) => (b.disabled = true));
+        botonEjecutar.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Ejecutando...';
+        resultado.classList.remove("error");
+        resultado.classList.add("visible");
+        resultadoEstado.textContent = "En ejecución";
+        contenidoResultado.replaceChildren();
+        loading.classList.add("active");
+
+        try {
+          const respuesta = await fetch(
+            `/probar-algoritmo/?${parametros.toString()}`,
+          );
+          const datos = await respuesta.json();
+          if (!respuesta.ok)
+            throw new Error(datos.error || "No se pudo ejecutar el algoritmo.");
+          mostrarResultados(datos);
+        } catch (error) {
+          mostrarError(error.message || "Ocurrió un error inesperado.");
+        } finally {
+          loading.classList.remove("active");
+          botonEjecutar.disabled = false;
+          document.querySelectorAll(".run-mini").forEach((b) => (b.disabled = false));
+          botonEjecutar.innerHTML =
+            '<i class="fa-solid fa-play"></i> Ejecutar experimento';
+        }
+      });
+
+      function mostrarAvisoHistorial(mensaje, tipo) {
+        historyFeedback.textContent = mensaje;
+        historyFeedback.className = `history-feedback visible ${tipo || ""}`;
+      }
+
+      function ocultarAvisoHistorial() {
+        historyFeedback.textContent = "";
+        historyFeedback.className = "history-feedback";
+      }
+
+      function actualizarControlesSeleccion() {
+        const checks = Array.from(
+          historialLista.querySelectorAll(".corrida-checkbox"),
+        );
+        const seleccionados = checks.filter((check) => check.checked);
+        const total = checks.length;
+        historyActions.hidden = total === 0;
+        botonEliminarSeleccionadas.disabled = seleccionados.length === 0;
+        botonExportarSeleccionadas.disabled = seleccionados.length === 0;
+        botonCompararSeleccionadas.disabled =
+          seleccionados.length < 2 ||
+          seleccionados.length > GAVariantes.MAX_COMPARAR;
+        historyCount.textContent = `${seleccionados.length} de ${total} corridas seleccionadas`;
+        seleccionarTodas.checked = total > 0 && seleccionados.length === total;
+        seleccionarTodas.indeterminate =
+          seleccionados.length > 0 && seleccionados.length < total;
+        checks.forEach((check) => {
+          const tarjeta = check.closest(".history-card");
+          if (tarjeta) tarjeta.classList.toggle("selected", check.checked);
+        });
+      }
+
+      seleccionarTodas.addEventListener("change", () => {
+        historialLista
+          .querySelectorAll(".corrida-checkbox")
+          .forEach((check) => {
+            check.checked = seleccionarTodas.checked;
+          });
+        actualizarControlesSeleccion();
+      });
+
+      historialLista.addEventListener("change", (event) => {
+        if (event.target.matches(".corrida-checkbox"))
+          actualizarControlesSeleccion();
+      });
+
+      function obtenerCookie(nombre) {
+        const prefijo = `${nombre}=`;
+        const cookies = document.cookie ? document.cookie.split(";") : [];
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith(prefijo))
+            return decodeURIComponent(cookie.slice(prefijo.length));
+        }
+        // Alternativa segura para plantillas Django con CSRF token renderizado.
+        const csrfInput = document.querySelector(
+          '#csrf-form input[name="csrfmiddlewaretoken"]',
+        );
+        return csrfInput ? csrfInput.value : "";
+      }
+
+      botonEliminarSeleccionadas.addEventListener("click", async () => {
+        const ids = Array.from(
+          historialLista.querySelectorAll(".corrida-checkbox:checked"),
+        ).map((check) => check.value);
+        if (ids.length === 0) {
+          mostrarAvisoHistorial(
+            "Selecciona al menos una corrida para eliminar.",
+            "error",
+          );
+          return;
+        }
+
+        const confirmado = window.confirm(
+          `¿Eliminar ${ids.length} corrida(s) seleccionada(s)? Esta acción no se puede deshacer.`,
+        );
+        if (!confirmado) return;
+
+        botonEliminarSeleccionadas.disabled = true;
+        botonEliminarSeleccionadas.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+        ocultarAvisoHistorial();
+
+        try {
+          const datos = await eliminarCorridas(ids);
+          mostrarAvisoHistorial(
+            datos.mensaje || `${ids.length} corrida(s) eliminada(s).`,
+            "success",
+          );
+          seleccionarTodas.checked = false;
+          await cargarHistorial({ mantenerAviso: true });
+        } catch (error) {
+          mostrarAvisoHistorial(
+            error.message || "Ocurrió un error al eliminar el historial.",
+            "error",
+          );
+        } finally {
+          botonEliminarSeleccionadas.innerHTML =
+            '<i class="fa-solid fa-trash"></i> Eliminar seleccionadas';
+          actualizarControlesSeleccion();
+        }
+      });
+
+      botonActualizarHistorial.addEventListener("click", () =>
+        cargarHistorial(),
+      );
+
+      function idsSeleccionados() {
+        return Array.from(
+          historialLista.querySelectorAll(".corrida-checkbox:checked"),
+        ).map((check) => Number(check.value));
+      }
+
+      botonCompararSeleccionadas.addEventListener("click", () => {
+        const ids = idsSeleccionados();
+        if (ids.length < 2 || ids.length > GAVariantes.MAX_COMPARAR) {
+          mostrarAvisoHistorial(
+            `Selecciona de 2 a ${GAVariantes.MAX_COMPARAR} corridas para comparar.`,
+            "error",
+          );
+          return;
+        }
+        GAVariantes.abrirComparacion(ids);
+      });
+
+      botonExportarSeleccionadas.addEventListener("click", () => {
+        const ids = idsSeleccionados();
+        if (ids.length) GAVariantes.descargarExcel({ ids });
+      });
+
+      document
+        .getElementById("btn-exportar-historial")
+        .addEventListener("click", () =>
+          GAVariantes.descargarExcel({ funcion: filtroFuncion.value }),
+        );
+
+      const filtroFuncion = document.getElementById("filtro-funcion");
+      const historySummary = document.getElementById("history-summary");
+      let corridasCache = [];
+
+      function formatearNumero(valor, decimales = 6) {
+        const n = Number(valor);
+        return Number.isFinite(n) ? n.toFixed(decimales) : "No disponible";
+      }
+
+      function formatearTiempo(segundos) {
+        const s = Number(segundos);
+        if (!Number.isFinite(s)) return "No disponible";
+        return s < 1 ? `${(s * 1000).toFixed(1)} ms` : `${s.toFixed(3)} s`;
+      }
+
+      function formatearFecha(iso) {
+        const fecha = new Date(iso);
+        if (Number.isNaN(fecha.getTime())) return iso || "No disponible";
+        return fecha.toLocaleString("es-MX", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        });
+      }
+
+      async function eliminarCorridas(ids) {
+        const csrfToken = obtenerCookie("csrftoken");
+        const respuesta = await fetch("/eliminar-corridas/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ ids }),
+        });
+        let datos = {};
+        try {
+          datos = await respuesta.json();
+        } catch (_) {
+          /* sin JSON */
+        }
+        if (!respuesta.ok || datos.ok === false) {
+          throw new Error(
+            datos.error ||
+              "No se pudieron eliminar las corridas seleccionadas.",
+          );
+        }
+        return datos;
+      }
+
+      function crearChip(etiqueta, valor, extraClase) {
+        const chip = crearElemento("span", `chip ${extraClase || ""}`);
+        chip.appendChild(document.createTextNode(`${etiqueta} `));
+        chip.appendChild(crearElemento("b", "", valor ?? "—"));
+        return chip;
+      }
+
+      function crearTarjetaCorrida(corrida) {
+        const tarjeta = crearElemento("article", "history-card");
+        tarjeta.dataset.funcion = corrida.funcion || "";
+
+        const head = crearElemento("div", "history-card-head");
+        const titulo = crearElemento("div");
+        const fila = crearElemento("div", "history-card-title");
+        fila.appendChild(crearElemento("h4", "", corrida.funcion ?? "Función"));
+        fila.appendChild(crearElemento("span", "run-id", `#${corrida.id}`));
+        titulo.appendChild(fila);
+        titulo.appendChild(
+          crearElemento("span", "run-date", formatearFecha(corrida.fecha)),
+        );
+        head.appendChild(titulo);
+
+        const tools = crearElemento("div", "history-card-tools");
+        const label = crearElemento("label", "history-select");
+        label.setAttribute("aria-label", `Seleccionar corrida ${corrida.id}`);
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.className = "corrida-checkbox";
+        check.value = String(corrida.id ?? "");
+        label.appendChild(check);
+        tools.appendChild(label);
+
+        const expandir = crearElemento("button", "icon-btn expand");
+        expandir.type = "button";
+        expandir.title = "Expandir / comprimir";
+        expandir.setAttribute("aria-label", `Expandir corrida ${corrida.id}`);
+        expandir.appendChild(
+          crearElemento("i", "fa-solid fa-up-right-and-down-left-from-center"),
+        );
+        expandir.addEventListener("click", () => {
+          const abierta = tarjeta.classList.toggle("expanded");
+          expandir.firstChild.className = abierta
+            ? "fa-solid fa-down-left-and-up-right-to-center"
+            : "fa-solid fa-up-right-and-down-left-from-center";
+          if (abierta)
+            tarjeta.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+        tools.appendChild(expandir);
+
+        const borrar = crearElemento("button", "icon-btn");
+        borrar.type = "button";
+        borrar.title = "Eliminar esta corrida";
+        borrar.setAttribute("aria-label", `Eliminar corrida ${corrida.id}`);
+        borrar.appendChild(crearElemento("i", "fa-solid fa-trash"));
+        borrar.addEventListener("click", async () => {
+          if (!window.confirm(`¿Eliminar la corrida #${corrida.id}?`)) return;
+          borrar.disabled = true;
+          try {
+            const datos = await eliminarCorridas([corrida.id]);
+            mostrarAvisoHistorial(datos.mensaje, "success");
+            await cargarHistorial({ mantenerAviso: true });
+          } catch (error) {
+            mostrarAvisoHistorial(error.message, "error");
+            borrar.disabled = false;
+          }
+        });
+        tools.appendChild(borrar);
+        head.appendChild(tools);
+        tarjeta.appendChild(head);
+
+        const chips = crearElemento("div", "chip-row");
+        chips.appendChild(crearChip("d", corrida.dimensiones ?? 2));
+        chips.appendChild(crearChip("Población", corrida.poblacion));
+        chips.appendChild(crearChip("Generaciones", corrida.generaciones));
+        chips.appendChild(
+          crearChip("Hilos", corrida.num_hilos, "chip-threads"),
+        );
+        chips.appendChild(crearChip("Cruza", corrida.probabilidad_cruza));
+        chips.appendChild(crearChip("Mutación", corrida.probabilidad_mutacion));
+        chips.appendChild(crearChip("Elitismo", corrida.elitismo));
+        chips.appendChild(crearChip("Torneo", corrida.torneo));
+        chips.appendChild(crearChip("Semilla", corrida.semilla ?? "—"));
+        if (corrida.limite_inferior !== null && corrida.limite_inferior !== undefined)
+          chips.appendChild(crearChip("Dominio", GAVariantes.textoDominio(corrida)));
+        tarjeta.appendChild(chips);
+
+        const valor = Number(corrida.valor_obtenido);
+        const minimo = Number(corrida.minimo_conocido);
+        const error = Math.abs(valor - minimo);
+        const cercano = Number.isFinite(error) && error < 1e-3;
+
+        const scores = crearElemento("div", "score-grid");
+        const s1 = crearElemento("div", `score ${cercano ? "good" : "warn"}`);
+        s1.appendChild(crearElemento("span", "score-label", "Valor obtenido"));
+        s1.appendChild(
+          crearElemento("span", "score-value", formatearNumero(valor)),
+        );
+        const s2 = crearElemento("div", "score");
+        s2.appendChild(crearElemento("span", "score-label", "Mínimo conocido"));
+        s2.appendChild(
+          crearElemento("span", "score-value", formatearNumero(minimo)),
+        );
+        scores.appendChild(s1);
+        scores.appendChild(s2);
+        tarjeta.appendChild(scores);
+
+        const sol = crearElemento("div", "solution-box");
+        sol.appendChild(
+          crearElemento("span", "score-label", "Mejor solución (individuo)"),
+        );
+        const coords = crearElemento("div", "coords");
+        const vector = Array.isArray(corrida.mejor_solucion)
+          ? corrida.mejor_solucion
+          : [];
+        vector.forEach((x, i) => {
+          const c = crearElemento("span", "coord");
+          c.appendChild(crearElemento("span", "", `x${i + 1} = `));
+          c.appendChild(document.createTextNode(formatearNumero(x)));
+          coords.appendChild(c);
+        });
+        if (!vector.length)
+          coords.appendChild(crearElemento("span", "coord", "No disponible"));
+        sol.appendChild(coords);
+        tarjeta.appendChild(sol);
+
+        const pie = crearElemento("div", "time-pill");
+        pie.appendChild(crearElemento("i", "fa-regular fa-clock"));
+        pie.appendChild(
+          document.createTextNode(
+            `${formatearTiempo(corrida.tiempo_segundos)} · error ${Number.isFinite(error) ? error.toExponential(2) : "—"}`,
+          ),
+        );
+        tarjeta.appendChild(pie);
+
+        if (corrida.grafica_convergencia) {
+          const enlace = document.createElement("a");
+          enlace.className = "graph-link";
+          enlace.href = corrida.grafica_convergencia;
+          enlace.target = "_blank";
+          enlace.rel = "noopener";
+          const imagen = document.createElement("img");
+          imagen.src = corrida.grafica_convergencia;
+          imagen.alt = `Convergencia de la corrida ${corrida.id}`;
+          imagen.loading = "lazy";
+          enlace.appendChild(imagen);
+          tarjeta.appendChild(enlace);
+        }
+        return tarjeta;
+      }
+
+      function renderizarHistorial() {
+        const filtro = filtroFuncion.value;
+        const corridas = filtro
+          ? corridasCache.filter((c) => c.funcion === filtro)
+          : corridasCache;
+        historialLista.replaceChildren();
+        historySummary.textContent = `${corridasCache.length} corrida(s) guardada(s)${filtro ? ` · mostrando ${corridas.length} de ${filtro}` : ""}.`;
+
+        if (!corridas.length) {
+          historyActions.hidden = true;
+          const vacio = crearElemento("div", "history-empty");
+          vacio.appendChild(
+            crearElemento("i", "fa-solid fa-clock-rotate-left"),
+          );
+          vacio.appendChild(crearElemento("h4", "", "Aún no hay corridas"));
+          vacio.appendChild(
+            crearElemento("p", "", "Ejecuta un experimento para verlo aquí."),
+          );
+          historialLista.appendChild(vacio);
+          actualizarControlesSeleccion();
+          return;
+        }
+        const grid = crearElemento("div", "history-grid");
+        corridas.forEach((c) => grid.appendChild(crearTarjetaCorrida(c)));
+        historialLista.appendChild(grid);
+        actualizarControlesSeleccion();
+      }
+
+      filtroFuncion.addEventListener("change", renderizarHistorial);
+
+      async function cargarHistorial(opciones = {}) {
+        if (!opciones.mantenerAviso) ocultarAvisoHistorial();
+        historialLista.replaceChildren();
+        const cargando = crearElemento("div", "history-empty");
+        cargando.appendChild(crearElemento("i", "fa-solid fa-spinner fa-spin"));
+        cargando.appendChild(crearElemento("h4", "", "Cargando historial..."));
+        historialLista.appendChild(cargando);
+        botonActualizarHistorial.disabled = true;
+
+        try {
+          const respuesta = await fetch("/historial-json/");
+          if (!respuesta.ok)
+            throw new Error("No se pudo consultar el historial.");
+          const datos = await respuesta.json();
+          corridasCache = Array.isArray(datos) ? datos : datos.corridas || [];
+          renderizarHistorial();
+        } catch (error) {
+          historyActions.hidden = true;
+          historialLista.replaceChildren();
+          const aviso = crearElemento("div", "history-empty");
+          aviso.appendChild(
+            crearElemento("i", "fa-solid fa-triangle-exclamation"),
+          );
+          aviso.appendChild(
+            crearElemento("h4", "", "No se pudo cargar el historial"),
+          );
+          aviso.appendChild(crearElemento("p", "", error.message));
+          const reintentar = crearElemento(
+            "button",
+            "btn btn-secondary",
+            "Reintentar",
+          );
+          reintentar.type = "button";
+          reintentar.addEventListener("click", () => cargarHistorial());
+          aviso.appendChild(reintentar);
+          historialLista.appendChild(aviso);
+        } finally {
+          botonActualizarHistorial.disabled = false;
+        }
+      }
+
+      /* =====================================================================
+         Comparativo secuencial vs paralelo (derivado del historial)
+         ===================================================================== */
+      const botonActualizarComparativo = document.getElementById(
+        "btn-actualizar-comparativo",
+      );
+      const selectHilos = document.getElementById("cmp-hilos-select");
+      const selectUltimas = document.getElementById("cmp-ultimas-select");
+      const compareFeedback = document.getElementById("compare-feedback");
+      const compareSummary = document.getElementById("compare-summary");
+      const chartPanel = document.getElementById("chart-panel");
+      const compareTableContainer = document.getElementById(
+        "compare-table-container",
+      );
+      const compareHistory = document.getElementById("compare-history");
+      const compareHistoryBody = document.getElementById(
+        "compare-history-body",
+      );
+      const compareHistoryCount = document.getElementById(
+        "compare-history-count",
+      );
+      let graficaComparativo = null;
+
+      const COLOR_SEQ = "#2f7fdb";
+      const COLOR_PAR = "#f07f2a";
+
+      function mostrarAvisoComparativo(mensaje, tipo) {
+        compareFeedback.textContent = mensaje;
+        compareFeedback.className = `compare-feedback visible ${tipo || ""}`;
+      }
+      function ocultarAvisoComparativo() {
+        compareFeedback.textContent = "";
+        compareFeedback.className = "compare-feedback";
+      }
+
+      /* Dibuja la etiqueta de aceleración sobre cada par de barras. */
+      const pluginAceleracion = {
+        id: "aceleracion",
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          const metaSeq = chart.getDatasetMeta(0);
+          const metaPar = chart.getDatasetMeta(1);
+          const resumen = chart.$resumen || [];
+          ctx.save();
+          ctx.font = "700 12px Inter, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          resumen.forEach((fila, i) => {
+            const a = metaSeq.data[i];
+            const b = metaPar.data[i];
+            if (!a || !b || fila.aceleracion == null) return;
+            const x = (a.x + b.x) / 2;
+            const y = Math.min(a.y, b.y) - 34;
+            const texto = `${Number(fila.aceleracion).toFixed(3)}x`;
+            const sube = fila.aceleracion > 1;
+            const ancho = ctx.measureText(texto).width + 16;
+            ctx.fillStyle = sube ? "#dcfce7" : "#fee2e2";
+            ctx.beginPath();
+            ctx.roundRect(x - ancho / 2, y - 20, ancho, 22, 5);
+            ctx.fill();
+            ctx.fillStyle = sube ? "#15803d" : "#dc2626";
+            ctx.fillText(texto, x, y - 1);
+          });
+          ctx.restore();
+        },
+      };
+
+      /* Valores de tiempo sobre cada barra. */
+      const pluginValores = {
+        id: "valoresBarra",
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          ctx.save();
+          ctx.font = "700 11px Inter, sans-serif";
+          ctx.fillStyle = "#172033";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          chart.data.datasets.forEach((ds, di) => {
+            const meta = chart.getDatasetMeta(di);
+            meta.data.forEach((barra, i) => {
+              const v = ds.data[i];
+              if (v == null) return;
+              ctx.fillText(Number(v).toFixed(6), barra.x, barra.y - 4);
+            });
+          });
+          ctx.restore();
+        },
+      };
+
+      function renderizarGrafica(resumen) {
+        if (typeof Chart === "undefined") return;
+        const labels = resumen.map((r) => r.funcion);
+        const seq = resumen.map((r) => r.tiempo_secuencial);
+        const par = resumen.map((r) => r.tiempo_paralelo);
+        const maximo = Math.max(
+          0,
+          ...seq.filter(Number.isFinite),
+          ...par.filter(Number.isFinite),
+        );
+
+        if (!graficaComparativo) {
+          const ctx = document.getElementById("grafica-comparativo");
+          graficaComparativo = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: "Secuencial (1 hilo)",
+                  data: seq,
+                  backgroundColor: COLOR_SEQ,
+                  borderRadius: 3,
+                  categoryPercentage: 0.7,
+                  barPercentage: 0.95,
+                },
+                {
+                  label: "Paralelo (concurrencia)",
+                  data: par,
+                  backgroundColor: COLOR_PAR,
+                  borderRadius: 3,
+                  categoryPercentage: 0.7,
+                  barPercentage: 0.95,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: { padding: { top: 30 } },
+              animation: { duration: 400 },
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { font: { weight: 600 }, boxWidth: 28 },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (c) =>
+                      `${c.dataset.label}: ${Number(c.raw).toFixed(6)} s`,
+                  },
+                },
+              },
+              scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 13 } } },
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Tiempo de ejecución (segundos)",
+                  },
+                  grid: { color: "#e5e7eb", borderDash: [4, 4] },
+                },
+              },
+            },
+            plugins: [pluginValores, pluginAceleracion],
+          });
+        } else {
+          graficaComparativo.data.labels = labels;
+          graficaComparativo.data.datasets[0].data = seq;
+          graficaComparativo.data.datasets[1].data = par;
+        }
+        graficaComparativo.options.scales.y.suggestedMax = maximo * 1.25;
+        graficaComparativo.$resumen = resumen;
+        graficaComparativo.update();
+      }
+
+      function veredicto(aceleracion) {
+        if (aceleracion == null) return ["even", "Falta una corrida"];
+        if (aceleracion > 1) return ["up", "Paralela más rápida"];
+        if (aceleracion < 1) return ["down", "Secuencial más rápida"];
+        return ["even", "Tiempos iguales"];
+      }
+
+      function celda(texto, clase) {
+        return crearElemento("td", clase || "", texto);
+      }
+
+      function renderizarTabla(resumen) {
+        compareTableContainer.replaceChildren();
+        const wrap = crearElemento("div", "compare-table-wrap");
+        const tabla = crearElemento("table", "compare-table");
+        const thead = crearElemento("thead");
+        const trh = crearElemento("tr");
+        [
+          "Función",
+          "Secuencial promedio (s)",
+          "Paralelo promedio (s)",
+          "Aceleración (x)",
+          "Mejor valor secuencial",
+          "Mejor valor paralelo",
+          "Resultado",
+        ].forEach((t) => trh.appendChild(crearElemento("th", "", t)));
+        thead.appendChild(trh);
+        tabla.appendChild(thead);
+
+        const tbody = crearElemento("tbody");
+        resumen.forEach((r) => {
+          const [clase, texto] = veredicto(r.aceleracion);
+          const tr = crearElemento("tr");
+          const tdF = celda(r.funcion);
+          const conteo = crearElemento(
+            "span",
+            "cell-date",
+            ` (${r.corridas_secuencial.length} seq · ${r.corridas_paralelo.length} par)`,
+          );
+          conteo.style.fontWeight = "600";
+          tdF.appendChild(conteo);
+          if (r.parametros_distintos) {
+            tdF.appendChild(document.createTextNode(" "));
+            const aviso = crearElemento(
+              "i",
+              "fa-solid fa-triangle-exclamation",
+            );
+            aviso.title =
+              "Las corridas promediadas usan población, generaciones o dimensiones distintas";
+            aviso.style.color = "#b45309";
+            tdF.appendChild(aviso);
+          }
+          tr.appendChild(tdF);
+          tr.appendChild(celda(formatearNumero(r.tiempo_secuencial)));
+          tr.appendChild(celda(formatearNumero(r.tiempo_paralelo)));
+          tr.appendChild(
+            celda(
+              r.aceleracion == null
+                ? "—"
+                : `${Number(r.aceleracion).toFixed(3)}x`,
+              `speed ${clase}`,
+            ),
+          );
+          tr.appendChild(celda(formatearNumero(r.valor_secuencial)));
+          tr.appendChild(celda(formatearNumero(r.valor_paralelo)));
+          const tdV = crearElemento("td");
+          tdV.appendChild(crearElemento("span", `verdict ${clase}`, texto));
+          tr.appendChild(tdV);
+          tbody.appendChild(tr);
+        });
+        tabla.appendChild(tbody);
+        wrap.appendChild(tabla);
+        compareTableContainer.appendChild(wrap);
+      }
+
+      function renderizarResumen(resumen) {
+        compareSummary.replaceChildren();
+        const completas = resumen.filter((r) => r.aceleracion != null);
+        const total = completas.length;
+        const ganaParalelo = completas.filter((r) => r.aceleracion > 1).length;
+        const promedio =
+          total > 0
+            ? completas.reduce((acc, r) => acc + Number(r.aceleracion), 0) /
+              total
+            : 0;
+        const mejor = completas.reduce(
+          (m, r) => (!m || r.aceleracion > m.aceleracion ? r : m),
+          null,
+        );
+        const hilos = selectHilos.value === "auto" ? "N" : selectHilos.value;
+        const ventana = Number(selectUltimas.value) || 0;
+        const tarjetas = [
+          [
+            "Funciones comparadas",
+            `${total} / ${resumen.length}`,
+            ventana ? `en las últimas ${ventana} corridas` : "en todas las corridas",
+          ],
+          [
+            "Paralelo gana en",
+            `${ganaParalelo} / ${total}`,
+            "aceleración > 1x",
+          ],
+          [
+            "Aceleración promedio",
+            `${promedio.toFixed(3)}x`,
+            `1 hilo vs ${hilos} hilos`,
+          ],
+          [
+            "Mayor aceleración",
+            mejor ? `${Number(mejor.aceleracion).toFixed(3)}x` : "—",
+            mejor ? mejor.funcion : "",
+          ],
+        ];
+        tarjetas.forEach(([l, v, s]) => {
+          const m = crearElemento("div", "metric");
+          m.appendChild(crearElemento("div", "metric-label", l));
+          m.appendChild(crearElemento("div", "metric-value", v));
+          m.appendChild(crearElemento("div", "metric-sub", s));
+          compareSummary.appendChild(m);
+        });
+      }
+
+      function renderizarCorridasUsadas(resumen) {
+        compareHistoryBody.replaceChildren();
+        let n = 0;
+        resumen.forEach((r) => {
+          [
+            ...r.corridas_secuencial.map((c) => ["Secuencial", c]),
+            ...r.corridas_paralelo.map((c) => ["Paralelo", c]),
+          ].forEach(([rol, c]) => {
+            n += 1;
+            const tr = crearElemento("tr");
+            tr.appendChild(celda(r.funcion));
+            tr.appendChild(celda(rol, "cell-date"));
+            tr.appendChild(celda(`#${c.id}`));
+            tr.appendChild(celda(formatearFecha(c.fecha), "cell-date"));
+            tr.appendChild(
+              celda(
+                `${c.poblacion} / ${c.generaciones} / ${c.num_hilos} / ${c.dimensiones ?? 2}`,
+              ),
+            );
+            tr.appendChild(celda(formatearNumero(c.tiempo_segundos)));
+            tr.appendChild(celda(formatearNumero(c.valor_obtenido)));
+            compareHistoryBody.appendChild(tr);
+          });
+        });
+        compareHistoryCount.textContent = String(n);
+      }
+
+      function actualizarOpcionesHilos(corridas) {
+        const previo = selectHilos.value;
+        const hilos = Array.from(
+          new Set(
+            corridas.map((c) => Number(c.num_hilos)).filter((h) => h > 1),
+          ),
+        ).sort((a, b) => a - b);
+        selectHilos.replaceChildren();
+        const auto = document.createElement("option");
+        auto.value = "auto";
+        auto.textContent = "Paralelo: cualquier N > 1 (más reciente)";
+        selectHilos.appendChild(auto);
+        hilos.forEach((h) => {
+          const op = document.createElement("option");
+          op.value = String(h);
+          op.textContent = `Paralelo: ${h} hilos`;
+          selectHilos.appendChild(op);
+        });
+        selectHilos.value = Array.from(selectHilos.options).some(
+          (o) => o.value === previo,
+        )
+          ? previo
+          : "auto";
+      }
+
+      function promedio(lista, campo) {
+        const valores = lista.map((c) => Number(c[campo])).filter(Number.isFinite);
+        if (!valores.length) return null;
+        return valores.reduce((a, b) => a + b, 0) / valores.length;
+      }
+      function minimo(lista, campo) {
+        const valores = lista.map((c) => Number(c[campo])).filter(Number.isFinite);
+        return valores.length ? Math.min(...valores) : null;
+      }
+
+      /* Dentro de las últimas N corridas, promedia por función los tiempos
+         de 1 hilo (secuencial) y de varios hilos (paralelo). */
+      function construirComparativo(corridas) {
+        const filtroHilos = selectHilos.value;
+        const limite = Number(selectUltimas.value) || 0;
+        let ordenadas = corridas
+          .slice()
+          .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        if (limite > 0) ordenadas = ordenadas.slice(0, limite);
+        const funciones = Array.from(
+          document.querySelectorAll('#filtro-funcion option[value]:not([value=""])'),
+        ).map((o) => o.value);
+
+        return funciones
+          .map((funcion) => {
+            const propias = ordenadas.filter((c) => c.funcion === funcion);
+            const seqs = propias.filter((c) => Number(c.num_hilos) === 1);
+            const pars = propias.filter((c) =>
+              filtroHilos === "auto"
+                ? Number(c.num_hilos) > 1
+                : Number(c.num_hilos) === Number(filtroHilos),
+            );
+            if (!seqs.length && !pars.length) return null;
+            const tSeq = promedio(seqs, "tiempo_segundos");
+            const tPar = promedio(pars, "tiempo_segundos");
+            const aceleracion =
+              tSeq != null && tPar != null && tPar > 0 ? tSeq / tPar : null;
+            const clave = (c) =>
+              `${c.poblacion}/${c.generaciones}/${c.dimensiones ?? 2}`;
+            const claves = new Set([...seqs, ...pars].map(clave));
+            return {
+              funcion,
+              corridas_secuencial: seqs,
+              corridas_paralelo: pars,
+              tiempo_secuencial: tSeq,
+              tiempo_paralelo: tPar,
+              valor_secuencial: minimo(seqs, "valor_obtenido"),
+              valor_paralelo: minimo(pars, "valor_obtenido"),
+              aceleracion,
+              parametros_distintos: claves.size > 1,
+            };
+          })
+          .filter(Boolean);
+      }
+
+      function renderizarComparativo(corridas) {
+        actualizarOpcionesHilos(corridas);
+        const resumen = construirComparativo(corridas);
+        const hay = resumen.length > 0;
+        compareSummary.hidden = !hay;
+        chartPanel.hidden = !hay;
+        compareHistory.hidden = !hay;
+
+        if (!hay) {
+          compareTableContainer.replaceChildren();
+          const vacio = crearElemento("div", "compare-empty");
+          vacio.appendChild(crearElemento("i", "fa-solid fa-gauge-high"));
+          vacio.appendChild(
+            crearElemento("h4", "", "Sin corridas para comparar"),
+          );
+          vacio.appendChild(
+            crearElemento(
+              "p",
+              "",
+              "Ejecuta cada función con 1 hilo y luego con varios hilos en la pestaña Experimento; aquí se emparejan automáticamente.",
+            ),
+          );
+          compareTableContainer.appendChild(vacio);
+          return;
+        }
+        const incompletas = resumen.filter((r) => r.aceleracion == null);
+        if (incompletas.length) {
+          mostrarAvisoComparativo(
+            `Falta la corrida secuencial (1 hilo) o paralela para: ${incompletas.map((r) => r.funcion).join(", ")}.`,
+            "error",
+          );
+        }
+        renderizarResumen(resumen);
+        renderizarGrafica(resumen);
+        renderizarTabla(resumen);
+        renderizarCorridasUsadas(resumen);
+      }
+
+      async function cargarComparativo() {
+        ocultarAvisoComparativo();
+        botonActualizarComparativo.disabled = true;
+        try {
+          const respuesta = await fetch("/historial-json/");
+          if (!respuesta.ok)
+            throw new Error("No se pudo consultar el historial.");
+          const datos = await respuesta.json();
+          corridasCache = Array.isArray(datos) ? datos : datos.corridas || [];
+          renderizarComparativo(corridasCache);
+        } catch (error) {
+          mostrarAvisoComparativo(error.message, "error");
+        } finally {
+          botonActualizarComparativo.disabled = false;
+        }
+      }
+
+      botonActualizarComparativo.addEventListener("click", cargarComparativo);
+      selectUltimas.addEventListener("change", () => {
+        ocultarAvisoComparativo();
+        renderizarComparativo(corridasCache);
+      });
+      selectHilos.addEventListener("change", () => {
+        ocultarAvisoComparativo();
+        renderizarComparativo(corridasCache);
+      });
+
+      // Muestra la tarjeta del benchmark inicial si hay una función seleccionada.
+      actualizarBenchmark();
+    </script>
+  </body>
+</html>
